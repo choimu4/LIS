@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네이버 지도</title>
+    <!-- 네이버 지도 API 스크립트 로드 -->
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?clientId=iD6uy3B6WbLWAn7fkNH5AIBI4MwN4nJ0QJIamkfF"></script>
+</head>
+<body>
+    <!-- 지도를 표시할 div 요소 -->
+    <div id="map" style="width: 100%; height: 400px;"></div>
+
+    <script>
+        // 네이버 지도 생성
+        var map = new naver.maps.Map('map', {
+            center: new naver.maps.LatLng(37.497934, 127.027568), // 지도 초기 중심 좌표
+            zoom: 10 // 초기 줌 레벨
+        });
+
+        // 필요한 경우 마커 추가 등의 추가 작업 수행 가능
+        var marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(37.497934, 127.027568), // 마커 위치
+            map: map // 마커를 표시할 지도 객체
+        });
+    </script>
+</body>
+</html>
