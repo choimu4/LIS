@@ -26,4 +26,6 @@ function Map() {
   return <div id="map" />
 }
 
-export default Map;
+export default Map; 
+ 
+ 

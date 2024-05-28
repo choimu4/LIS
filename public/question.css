@@ -46,7 +46,7 @@ body {
   .inquiry-button {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #333;
+    background-color: hsl(202, 35%, 50%);
     color: #fff;
     text-decoration: none;
     border: none;
@@ -56,12 +56,12 @@ body {
   }
   
   .inquiry-button:hover {
-    background-color: #555;
+    background-color: hsl(202, 35%, 50%);
   }
   
   /* Footer Styles */
   footer {
-    background-color: #333;
+    background-color: hsl(202, 76%, 68%);
     color: #fff;
     padding: 20px;
     text-align: center;

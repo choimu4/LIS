@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="register.css">
+</head>
+<body>
+  <!-- 회원가입 폼 -->
+  <div class="form">
+    <div class="form-inner">
+      <h2>회원가입</h2>
+      <form>
+        <div class="input-wrapper">
+          <label for="name">이름:</label>
+          <div class="input-group">
+            <span class="icon">👤</span>
+            <input type="text" id="name" name="name" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="username">아이디:</label>
+          <div class="input-group">
+            <span class="icon">😗</span>
+            <input type="text" id="username" name="username" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="password">비밀번호:</label>
+          <div class="input-group">
+            <span class="icon">🔒</span>
+            <input type="password" id="password" name="password" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="email">이메일:</label>
+          <div class="input-group">
+            <span class="icon">📧</span>
+            <input type="email" id="email" name="email" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="birthdate">생년월일:</label>
+          <div class="input-group">
+            <span class="icon">🎂</span>
+            <input type="date" id="birthdate" name="birthdate" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="phone">휴대전화 번호:</label>
+          <div class="input-group">
+            <span class="icon">📱</span>
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="예) 010-1234-5678">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button type="submit" class="btn btn--primary">회원가입</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    // 회원가입 처리 함수
+    function register(name, username, password, email, birthdate, phone) {
+      // 아이디와 비밀번호 유효성 검사
+      if (username.length < 4) {
+        alert('아이디는 4자 이상이어야 합니다.');
+        return;
+      }
+
+      // 비밀번호 규칙 검사
+      const specialChars = /[!@#$%^&*(),.?":{}|<>]/;
+      if (password.length < 6 || !specialChars.test(password)) {
+        alert('비밀번호는 6자 이상이며, 특수문자를 포함해야 합니다.');
+        return;
+      }
+
+      // 회원 정보 저장 (예시로 localStorage에 저장)
+      const userData = {
+        name,
+        username,
+        password,
+        email,
+        birthdate,
+        phone
+      };
+      localStorage.setItem(username, JSON.stringify(userData));
+      alert('회원가입이 완료되었습니다!');
+      window.location.href = "login.html"; // 로그인 페이지로 이동
+    }
+
+    // 회원가입 폼 제출 이벤트 핸들러
+    document.querySelector('form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value;
+      const birthdate = document.getElementById('birthdate').value;
+      const phone = document.getElementById('phone').value;
+      register(name, username, password, email, birthdate, phone);
+    });
+  </script>
+</body>
+</html>
