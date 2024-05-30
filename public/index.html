@@ -1,123 +1,89 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>LRS</title>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
-    <noscript
-      ><link rel="stylesheet" href="assets/css/noscript.css"
-    /></noscript>
-  </head>
-  <body class="is-preload">
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <style>
+      #header p {
+        color: black;
+      }
+    </style>
+</head>
+<body class="is-preload">
     <div id="wrapper">
-      <div id="bg"></div>
-      <div id="overlay"></div>
-      <div id="main">
-        <!-- Header -->
-        <header id="header">
-          <h1>Express L.R.S</h1>
-          <p>
-            Induk University&nbsp;&bull;&nbsp; Computer &nbsp;&bull;&nbsp;
-            Software &nbsp;&bull;&nbsp; 4th Team
-          </p>
-          <head>
-            <title>LRS</title>
-            <meta charset="utf-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1, user-scalable=no"
-            />
-            <link rel="stylesheet" href="assets/css/main.css" />
-            <noscript
-              ><link rel="stylesheet" href="assets/css/noscript.css"
-            /></noscript>
-            <style>
-              #header p {
-                color: black;
-              }
-            </style>
-          </head>
-          <nav>
-            <ul>
-              <li>
-                <a href="map.html" class="icon solid fa-map-marker-alt"
-                  ><span class="label">Location</span></a
-                >
-              </li>
-              <li>
-                <a
-                  href="login.html"
-                  class="icon solid fa-sign-in-alt"
-                  onclick="goToLogin()"
-                  ><span class="label">Login</span></a
-                >
-              </li>
-              <li>
-                <a href="mypage.html" class="icon solid fa-user"
-                  ><span class="label">My Profile</span></a
-                >
-              </li>
-              <li>
-                <a href="qna.html" class="icon solid fa-question-circle"
-                  ><span class="label">FAQ</span></a
-                >
-              </li>
-              <li>
-                <a
-                  href="https://github.com/choimu4/LIS/tree/test"
-                  class="icon brands fa-github"
-                  ><span class="label">Github</span></a
-                >
-              </li>
-            </ul>
-          </nav>
-        </header>
-        <!-- Footer -->
-        <footer id="footer">
-          <span class="copyright"
-            >&copy; L.R.S. INDUK
-            <a href="https://www.induk.ac.kr/">UNIVERSITY</a>.</span
-          >
-          <head>
-            <title>LRS</title>
-            <meta charset="utf-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1, user-scalable=no"
-            />
-            <link rel="stylesheet" href="assets/css/main.css" />
-            <noscript
-              ><link rel="stylesheet" href="assets/css/noscript.css"
-            /></noscript>
-            <style>
-              #header p {
-                color: black;
-              }
-            </style>
-          </head>
-        </footer>
-      </div>
+        <div id="bg"></div>
+        <div id="overlay"></div>
+        <div id="main">
+            <!-- Header -->
+            <header id="header">
+                <h1>Express L.R.S</h1>
+                <p>
+                    Induk University&nbsp;&bull;&nbsp; Computer &nbsp;&bull;&nbsp; Software &nbsp;&bull;&nbsp; 4th Team
+                </p>
+                <nav>
+                    <ul id="nav-list">
+                        <li>
+                            <a href="map.html" class="icon solid fa-map-marker-alt"><span class="label">Location</span></a>
+                        </li>
+                        <li id="login-item">
+                            <!-- 여기에 로그인 또는 로그아웃 버튼이 동적으로 삽입됩니다. -->
+                        </li>
+                        <li>
+                            <a href="mypage.html" class="icon solid fa-user"><span class="label">My Profile</span></a>
+                        </li>
+                        <li>
+                            <a href="qna.html" class="icon solid fa-question-circle"><span class="label">FAQ</span></a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/choimu4/LIS/tree/test" class="icon brands fa-github"><span class="label">Github</span></a>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <!-- Footer -->
+            <footer id="footer">
+                <span class="copyright">
+                    &copy; L.R.S. INDUK <a href="https://www.induk.ac.kr/">UNIVERSITY</a>.
+                </span>
+            </footer>
+        </div>
     </div>
     <script>
       window.onload = function () {
         document.body.classList.remove("is-preload");
+
+        // 세션 스토리지를 사용하여 로그인 상태 확인
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true'; // 'true' 문자열을 비교
+
+        const navList = document.getElementById('nav-list');
+        const loginItem = document.getElementById('login-item');
+
+        if (isLoggedIn) {
+          // 로그인된 상태라면 로그인 버튼을 로그아웃 버튼으로 대체
+          loginItem.innerHTML = `
+            <a href="#" class="icon solid fa-sign-out-alt" onclick="logout()">
+              <span class="label">Logout</span>
+            </a>
+          `;
+        } else {
+          // 로그아웃 상태라면 로그인 버튼 표시
+          loginItem.innerHTML = `
+            <a href="login.html" class="icon solid fa-sign-in-alt">
+              <span class="label">Login</span>
+            </a>
+          `;
+        }
       };
-      window.ontouchmove = function () {
-        return false;
-      };
-      window.onorientationchange = function () {
-        document.body.scrollTop = 0;
-      };
-      window.onload = function () {
-        document.body.classList.remove("is-preload");
-      };
-      function goToLogin() {
-        window.location.href = "login.html";
+
+      function logout() {
+        // 세션 스토리지에서 로그인 정보 삭제
+        sessionStorage.setItem('isLoggedIn', 'false'); // 로그아웃 상태로 설정
+        // index.html로 이동
+        window.location.href = 'index.html';
       }
     </script>
-  </body>
+</body>
 </html>

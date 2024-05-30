@@ -49,6 +49,7 @@
       // 관리자 계정 확인
       if (username === admin.username && password === admin.password) {
         sessionStorage.setItem('username', username);
+        sessionStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
         alert('관리자 로그인 성공!');
         window.location.href = "admin.html"; // 관리자 페이지로 이동
         return;
@@ -59,10 +60,11 @@
       if (userData && userData.password === password) {
         // 로그인 성공 시, 사용자 이름을 세션 스토리지에 저장
         sessionStorage.setItem('username', username);
+        sessionStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
         // 로그인 성공 메시지 출력
         alert('환영합니다!');
         // 로그인 성공 후 메인 페이지로 이동
-        window.location.href = "mainpage.html";
+        window.location.href = "index.html";
         return;
       }
 
@@ -71,6 +73,7 @@
         if (user.username === username && user.password === password) {
           // 로그인 성공 시, 사용자 이름을 세션 스토리지에 저장
           sessionStorage.setItem('username', username);
+          sessionStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
           // 로그인 성공 메시지 출력
           alert('환영합니다!');
           // 로그인 성공 후 메인 페이지로 이동
