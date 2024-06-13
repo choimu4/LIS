@@ -69,4 +69,5 @@
   * Front : 사용자 위치 권한, 현재 위치로 이동 기능 추가
 * 24.06.13
   * Front : map.html 세탁소 위치 검색, 마커, 현재 위치로 이동 기능 추가
+  * Front : qna.html, question.html, maypage.html 네비게이션바 추가
 
