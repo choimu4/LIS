@@ -84,8 +84,8 @@
     function handleNavigation() {
       const previousPage = document.referrer;
       if (previousPage) {
-        // 이전 페이지로 리다이렉트
-        window.location.href = previousPage;
+        // 이전 페이지로 리다이렉트하면서 새로고침
+        window.location.href = previousPage + "?refresh=true";
       } else if (window.location.pathname === '/index.html') {
         // 이전 페이지 정보가 없으면 index.html 새로고침
         window.location.reload();
@@ -93,6 +93,11 @@
         // 이전 페이지 정보가 없고 index.html이 아닌 경우 기본 페이지로 이동
         window.location.href = 'index.html';
       }
+    }
+
+    // 새로고침 쿼리 매개변수가 있을 때 페이지 새로고침
+    if (window.location.search.includes('refresh=true')) {
+      window.location.reload();
     }
 
     // 로그인 폼 제출 이벤트 핸들러
