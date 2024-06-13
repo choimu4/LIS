@@ -40,7 +40,7 @@
 
   <script>
     // 카카오 SDK 초기화
-    Kakao.init('YOUR_KAKAO_CLIENT_ID'); // 여기에 카카오 앱 키를 입력하세요.
+    Kakao.init('209c2fbbd8b5150893c2e7bbf4c704b4'); // 여기에 카카오 앱 키를 입력하세요.
 
     // 로그인 폼 제출 이벤트 핸들러
     document.querySelector('form').addEventListener('submit', function(event) {
@@ -54,7 +54,7 @@
     // 카카오 로그인 처리 함수
     function kakaoLogin() {
       Kakao.Auth.authorize({
-        redirectUri: 'http://localhost:3000/oauth'
+        redirectUri: 'http://localhost:3000/oauth/kakao/callback'
       });
     }
 
