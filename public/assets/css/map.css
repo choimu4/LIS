@@ -188,3 +188,16 @@ html, body {
     display: flex;
     z-index: 10; /* Ensures buttons are above the map */
 }
+#homeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+#homeButton img {
+    width: 40px;
+    height: 40px;
+}
