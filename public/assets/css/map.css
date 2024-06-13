@@ -188,16 +188,34 @@ html, body {
     display: flex;
     z-index: 10; /* Ensures buttons are above the map */
 }
-#homeButton {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
     background-color: transparent;
-    border: none;
-    cursor: pointer;
+    z-index: 1000;
+    transition: background-color 0.3s;
 }
-#homeButton img {
-    width: 40px;
-    height: 40px;
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
+.navbar li {
+    float: right;
+}
+.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar li a:hover {
+    background-color: hsl(202, 39%, 51%); 
+}
+.navbar:hover {
+    background-color: hsl(202, 76%, 68%); 
+}
+

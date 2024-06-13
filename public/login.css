@@ -8,7 +8,7 @@
   --space-l: calc(var(--space-root) * 1.5);
   --space-xl: calc(var(--space-root) * 2);
   --color-primary: hsl(202, 35%, 50%);
-  --color-secondary: hsl(202, 76%, 68%); 
+  --color-secondary: hsl(202, 76%, 68%);
   --color-tertiary: hsl(203, 73%, 75%);
   --base-border-radius: 0.25rem;
   --ease: cubic-bezier(0.075, 0.82, 0.165, 1);
@@ -187,6 +187,9 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: white; /* 추가된 부분 */
+  padding: var(--space-xs); /* 여백을 추가하여 버튼들이 서로 붙지 않도록 */
+  border-radius: var(--base-border-radius); /* 둥근 모서리 추가 */
 }
 
 .btn-group > * + * {
@@ -223,10 +226,18 @@ input:focus {
 
 .btn--text {
   font-size: calc(var(--font-size) / 1.5);
-  color: lightblue;
+  color: var(--color-primary);
   background-color: #ffffff;
   padding: 0;
 }
-.btn-group {
-  margin-top: 24px;
+
+.btn--kakao {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.btn--kakao img {
+  width: 100px; /* 이미지 크기에 맞게 조정 */
 }

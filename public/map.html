@@ -10,10 +10,38 @@
 </head>
 
 <body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li id="authButton"></li>
+            <li id="mypageButton"></li>
+			<li><a href="qna.html">Q&A</a></li>
+			<li><a href="question.html">FAQ</a></li>
+            <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
+        </ul>
+    </nav>
+	<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const authButton = document.getElementById('authButton');
+
+            if (isLoggedIn) {
+                authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
+				mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
+                document.getElementById('logoutLink').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    // 실제 로그아웃 처리 로직
+                    sessionStorage.removeItem('isLoggedIn');
+                    window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
+                });
+            } else {
+                authButton.innerHTML = '<a href="login.html">Login</a>';
+            }
+        });
+    </script>
     <div class="map_wrap">
         <div id="map"></div>
         <div id="menu_wrap" class="bg_white">
-            <hr>
             <ul id="placesList"></ul>
             <div id="pagination"></div>
         </div>
@@ -22,9 +50,6 @@
         <button id="refreshButton">현재 위치에서 갱신</button>
         <button id="currentLocationButton">현재 위치로 이동</button>
     </div>
-    <a href="index.html" id="homeButton" title="Home">
-        <img src="assets/image/home-icon.png" alt="Home">
-    </a>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
