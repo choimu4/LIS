@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>체크/신용카드 결제</title>
+    <link rel="stylesheet" href="payment.css">
+</head>
+<body>
+    <div class="container">
+        <h1>체크/신용카드 결제</h1>
+        <form action="process_card_payment.php" method="POST">
+            <input type="text" class="input-field" name="card_number" placeholder="카드 번호" required>
+            <input type="text" class="input-field" name="card_expiry" placeholder="유효 기간 (MM/YY)" required>
+            <input type="text" class="input-field" name="card_cvc" placeholder="CVC" required>
+            <button type="submit" class="button">결제하기</button>
+        </form>
+    </div>
+</body>
+</html>
