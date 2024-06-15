@@ -38,7 +38,7 @@ html, body {
 }
 #menu_wrap { 
     position: absolute; 
-    top: 0; 
+    top: 50px; 
     left: 0; 
     bottom: 0; 
     width: 250px; 
@@ -192,19 +192,22 @@ html, body {
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: transparent;
+    background-color: hsl(202, 76%, 68%); /* 기본 배경 색상 */
     z-index: 1000;
     transition: background-color 0.3s;
 }
+
 .navbar ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
 }
+
 .navbar li {
     float: right;
 }
+
 .navbar li a {
     display: block;
     color: white;
@@ -212,10 +215,9 @@ html, body {
     padding: 14px 16px;
     text-decoration: none;
 }
+
 .navbar li a:hover {
     background-color: hsl(202, 39%, 51%); 
 }
-.navbar:hover {
-    background-color: hsl(202, 76%, 68%); 
-}
+
 

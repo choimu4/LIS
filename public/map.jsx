@@ -1,71 +1,87 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import './Map.css'; // 맵 스타일을 위한 CSS 파일
 
-const NaverMap = () => {
+const { kakao } = window;
+
+const Map = () => {
   const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
 
   useEffect(() => {
-    // 현재 위치를 가져와서 맵을 로드
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
-      loadNaverMap(latitude, longitude);
+      const locPosition = new kakao.maps.LatLng(latitude, longitude);
+
+      const mapOption = {
+        center: locPosition,
+        level: 3,
+      };
+
+      const mapInstance = new kakao.maps.Map(document.getElementById('map'), mapOption);
+      setMap(mapInstance);
+
+      new kakao.maps.Marker({
+        map: mapInstance,
+        position: locPosition,
+      });
+
+      mapInstance.setCenter(locPosition);
     });
   }, []);
 
-  const loadNaverMap = (lat, lng) => {
-    const mapOptions = {
-      center: new naver.maps.LatLng(lat, lng),
-      zoom: 15,
-      minZoom: 6,
-      draggable: true,
-      pinchZoom: true,
-      scrollWheel: true,
-      disableKineticPan: false,
-      scaleControl: false,
-      logoControl: true,
-      logoControlOptions: {
-        position: naver.maps.Position.BOTTOM_RIGHT,
-      },
-      mapDataControl: false,
-      zoomControl: true,
-      zoomControlOptions: {
-        position: naver.maps.Position.TOP_LEFT,
-      },
-      mapTypeControl: false,
-    };
+  const searchPlaces = () => {
+    const ps = new kakao.maps.services.Places();
 
-    const mapInstance = new naver.maps.Map("map", mapOptions);
+    ps.keywordSearch('코인세탁소', placesSearchCB, {
+      bounds: map.getBounds()
+    });
+  };
 
-    const markerInstance = new naver.maps.Marker({
-      position: new naver.maps.LatLng(lat, lng),
-      map: mapInstance,
-      title: "현재 위치",
+  const placesSearchCB = (data, status) => {
+    if (status === kakao.maps.services.Status.OK) {
+      displayPlaces(data);
+    } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+      alert('검색 결과가 존재하지 않습니다.');
+    } else if (status === kakao.maps.services.Status.ERROR) {
+      alert('검색 결과 중 오류가 발생했습니다.');
+    }
+  };
+
+  const displayPlaces = (places) => {
+    const bounds = new kakao.maps.LatLngBounds();
+    places.forEach((place) => {
+      const placePosition = new kakao.maps.LatLng(place.y, place.x);
+      const marker = new kakao.maps.Marker({
+        map: map,
+        position: placePosition,
+      });
+
+      kakao.maps.event.addListener(marker, 'click', () => {
+        window.location.href = `reservation.html?name=${encodeURIComponent(place.place_name)}`;
+      });
+
+      bounds.extend(placePosition);
     });
 
-    setMap(mapInstance);
-    setMarker(markerInstance);
+    map.setBounds(bounds);
   };
 
   const handleLocationButtonClick = () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
-      const newPosition = new naver.maps.LatLng(latitude, longitude);
-
-      if (map && marker) {
-        map.setCenter(newPosition);
-        marker.setPosition(newPosition);
-      }
+      const newPosition = new kakao.maps.LatLng(latitude, longitude);
+      map.setCenter(newPosition);
     });
   };
 
   return (
-    <div id="mapWrapper" style={{ position: "relative", width: "100%", height: "1000px" }}>
-      <div id="map" style={{ width: "100%", height: "100%" }}></div>
-      <button id="myLocationButton" style={{ position: "absolute", top: "20px", right: "20px", zIndex: 1 }} onClick={handleLocationButtonClick}>
-        현재 위치로 이동
-      </button>
+    <div id="mapWrapper" style={{ position: 'relative', width: '100%', height: '1000px' }}>
+      <div id="map" style={{ width: '100%', height: '100%' }}></div>
+      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1 }}>
+        <button id="refreshButton" onClick={searchPlaces}>현재 위치에서 갱신</button>
+        <button id="currentLocationButton" onClick={handleLocationButtonClick}>현재 위치로 이동</button>
+      </div>
     </div>
   );
 };
 
-export default NaverMap;
+export default Map;

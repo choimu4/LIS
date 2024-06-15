@@ -15,19 +15,19 @@
             <li><a href="index.html">Home</a></li>
             <li id="authButton"></li>
             <li id="mypageButton"></li>
-			<li><a href="qna.html">Q&A</a></li>
-			<li><a href="question.html">FAQ</a></li>
+            <li><a href="qna.html">Q&A</a></li>
+            <li><a href="question.html">FAQ</a></li>
             <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
         </ul>
     </nav>
-	<script>
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
             const authButton = document.getElementById('authButton');
 
             if (isLoggedIn) {
                 authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
-				mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
+                mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
                 document.getElementById('logoutLink').addEventListener('click', function (event) {
                     event.preventDefault();
                     // 실제 로그아웃 처리 로직
@@ -142,25 +142,20 @@
 
                     bounds.extend(placePosition);
 
-                    (function (marker, title) {
-                        kakao.maps.event.addListener(marker, 'mouseover', function () {
-                            displayInfowindow(marker, title);
+                    (function (marker, place) {
+                        kakao.maps.event.addListener(marker, 'click', function () {
+                            window.location.href = `reservation.html?name=${encodeURIComponent(place.place_name)}`;
                         });
-                        kakao.maps.event.addListener(marker, 'mouseout', function () {
-                            infowindow.close();
-                        });
-                        itemEl.onmouseover = function () {
-                            displayInfowindow(marker, title);
+                        itemEl.onclick = function () {
+                            window.location.href = `reservation.html?name=${encodeURIComponent(place.place_name)}`;
                         };
-                        itemEl.onmouseout = function () {
-                            infowindow.close();
-                        };
-                    })(marker, place.place_name);
+                    })(marker, place);
 
                     fragment.appendChild(itemEl);
                 });
 
                 listEl.appendChild(fragment);
+                map.setBounds(bounds);
             }
 
             function displayPagination(pagination) {

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세탁소 예약</title>
+    <link rel="stylesheet" href="assets/css/reservation.css">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('name');
+            const laundryNameElement = document.getElementById('laundryName');
+            const reservationStatusElement = document.getElementById('reservationStatus');
+            const machineContainer = document.getElementById('machineContainer');
+
+            laundryNameElement.textContent = name;
+
+            // 예약 가능한 지점 리스트
+            const reservableStores = ["크린토피아 코인워시365 노원인덕대점"];
+
+            if (reservableStores.includes(name)) {
+                reservationStatusElement.textContent = "안녕하세요 LRS입니다.";
+                displayMachines();
+            } else {
+                reservationStatusElement.textContent = "예약이 불가능합니다.";
+            }
+
+            function displayMachines() {
+                // 세탁기와 건조기 대수 및 상태
+                const machines = [
+                    { type: '대형 세탁기', count: 3, status: 'available' },
+                    { type: '특대형 세탁기', count: 2, status: 'reserved' },
+                    { type: '대형 건조기', count: 3, status: 'in-use' },
+                    { type: '특대형 건조기', count: 2, status: 'broken' }
+                ];
+
+                machines.forEach(machine => {
+                    const row = document.createElement('div');
+                    row.className = 'machine-row';
+                    for (let i = 0; i < machine.count; i++) {
+                        const div = document.createElement('div');
+                        div.className = `machine ${machine.status}`;
+                        div.textContent = machine.type;
+                        row.appendChild(div);
+                    }
+                    machineContainer.appendChild(row);
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="map.html">Map</a></li>
+            <li><a href="qna.html">Q&A</a></li>
+            <li><a href="question.html">FAQ</a></li>
+            <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
+        </ul>
+    </nav>
+    <div class="legend" id="legend">
+        <h3>기계 상태 설명:</h3>
+        <div class="legend-item">
+            <div class="machine available"></div>
+            <span>예약 가능</span>
+        </div>
+        <div class="legend-item">
+            <div class="machine reserved"></div>
+            <span>대기중</span>
+        </div>
+        <div class="legend-item">
+            <div class="machine in-use"></div>
+            <span>사용중</span>
+        </div>
+        <div class="legend-item">
+            <div class="machine broken"></div>
+            <span>고장</span>
+        </div>
+    </div>
+    <div class="content-wrapper">
+        <div class="content">
+            <h1 id="laundryName">세탁소 이름</h1>
+            <p id="reservationStatus"></p>
+            <div id="machineContainer"></div>
+        </div>
+    </div>
+</body>
+</html>
