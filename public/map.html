@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="button_container">
-        <button id="refreshButton">현재 위치에서 갱신</button>
+        <button id="refreshButton">현재 위치에서 찾기</button>
         <button id="currentLocationButton">현재 위치로 이동</button>
     </div>
 
@@ -106,20 +106,26 @@
             }
 
             function searchPlaces() {
-                var bounds = map.getBounds();
+                var center = map.getCenter();
+                var level = map.getLevel();
                 var keyword = '코인세탁소';
 
                 var placesSearchOption = {
-                    bounds: bounds
+                    location: center,
+                    radius: 2000 // 검색 반경 설정 (단위: 미터)
                 };
 
-                ps.keywordSearch(keyword, placesSearchCB, placesSearchOption);
+                ps.keywordSearch(keyword, function(data, status, pagination) {
+                    placesSearchCB(data, status, pagination, center, level);
+                }, placesSearchOption);
             }
 
-            function placesSearchCB(data, status, pagination) {
+            function placesSearchCB(data, status, pagination, center, level) {
                 if (status === kakao.maps.services.Status.OK) {
                     displayPlaces(data);
                     displayPagination(pagination);
+                    map.setCenter(center); // 검색 전 중심을 유지
+                    map.setLevel(level);   // 검색 전 확대/축소 수준 유지
                 } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
                     alert('검색 결과가 존재하지 않습니다.');
                 } else if (status === kakao.maps.services.Status.ERROR) {
@@ -143,9 +149,21 @@
                     bounds.extend(placePosition);
 
                     (function (marker, place) {
+                        kakao.maps.event.addListener(marker, 'mouseover', function () {
+                            displayInfowindow(marker, place.place_name);
+                        });
+                        kakao.maps.event.addListener(marker, 'mouseout', function () {
+                            infowindow.close();
+                        });
                         kakao.maps.event.addListener(marker, 'click', function () {
                             window.location.href = `reservation.html?name=${encodeURIComponent(place.place_name)}`;
                         });
+                        itemEl.onmouseover = function () {
+                            displayInfowindow(marker, place.place_name);
+                        };
+                        itemEl.onmouseout = function () {
+                            infowindow.close();
+                        };
                         itemEl.onclick = function () {
                             window.location.href = `reservation.html?name=${encodeURIComponent(place.place_name)}`;
                         };
