@@ -14,6 +14,49 @@
       color: white;
       font-weight: bold;
     }
+
+    /* Tooltip container */
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 80px; /* Reduce the width */
+      background-color: white; /* Change background to white */
+      color: black; /* Change text color to black */
+      text-align: center;
+      border-radius: 6px;
+      padding: 2px 5px; /* Reduce the vertical padding */
+      position: absolute;
+      z-index: 1;
+      top: 130%; /* Position the tooltip below the icon */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: bold; /* Make text bold */
+    }
+
+    /* Tooltip arrow */
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      bottom: 100%; /* At the top of the tooltip */
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: white transparent transparent transparent; /* Change arrow color to match tooltip */
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+    }
   </style>
   <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=q54y71b9jd"></script>
 </head>
@@ -29,12 +72,25 @@
         <p>Induk University&nbsp;&bull;&nbsp; Computer &nbsp;&bull;&nbsp; Software &nbsp;&bull;&nbsp; 4th Team</p>
         <nav>
           <ul id="nav-list">
-            <li><a href="map.html" class="icon solid fa-map-marker-alt"><span class="label">Location</span></a></li>
-            <li id="login-item"><!-- 여기에 로그인 또는 로그아웃 버튼이 동적으로 삽입됩니다. --></li>
-            <li id="profile-item"></li>
-            <li><a href="qna.html" class="icon solid fa-question-circle"><span class="label">FAQ</span></a></li>
-            <li><a href="https://github.com/choimu4/LRS" class="icon brands fa-github"><span
-                  class="label">Github</span></a></li>
+            <li class="tooltip">
+              <a href="map.html" class="icon solid fa-map-marker-alt"></a>
+              <span class="tooltiptext">Map</span>
+            </li>
+            <li id="login-item" class="tooltip">
+              <!-- 여기에 로그인 또는 로그아웃 버튼이 동적으로 삽입됩니다. -->
+              <span class="tooltiptext">Login/Logout</span>
+            </li>
+            <li id="profile-item" class="tooltip">
+              <span class="tooltiptext">My Profile</span>
+            </li>
+            <li class="tooltip">
+              <a href="qna.html" class="icon solid fa-question-circle"></a>
+              <span class="tooltiptext">FAQ</span>
+            </li>
+            <li class="tooltip">
+              <a href="https://github.com/choimu4/LRS" class="icon brands fa-github"></a>
+              <span class="tooltiptext">Github</span>
+            </li>
           </ul>
         </nav>
       </header>
@@ -56,13 +112,13 @@
 
       if (isLoggedIn) {
         // 로그인된 상태라면 로그인 버튼을 로그아웃 버튼으로 대체
-        loginItem.innerHTML = `<a href="#" class="icon solid fa-sign-out-alt" onclick="logout()"><span class="label">Logout</span></a>`;
+        loginItem.innerHTML = `<a href="#" class="icon solid fa-sign-out-alt" onclick="logout()"></a><span class="tooltiptext">Logout</span>`;
         // My Profile 항목을 표시
-        profileItem.innerHTML = `<a href="mypage.html" class="icon solid fa-user"><span class="label">My Profile</span></a>`
+        profileItem.innerHTML = `<a href="mypage.html" class="icon solid fa-user"></a><span class="tooltiptext">My Profile</span>`
 
       } else {
         // 로그아웃 상태라면 로그인 버튼 표시
-        loginItem.innerHTML = `<a href="login.html" class="icon solid fa-sign-in-alt"><span class="label">Login</span></a>`;
+        loginItem.innerHTML = `<a href="login.html" class="icon solid fa-sign-in-alt"></a><span class="tooltiptext">Login</span>`;
         // My Profile 항목을 숨김
         profileItem.style.display = 'none';
       }
