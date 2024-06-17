@@ -60,7 +60,73 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <!-- 여기에 페이지 내용이 추가됩니다. -->
+  <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">세탁소 관리</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+              <li class="breadcrumb-item active">Laundry Management</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">세탁소 관리</h3>
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap" id="laundry-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>이름</th>
+                      <th>도로명 주소</th>
+                      <th>주소</th>
+                      <th>전화번호</th>
+                      <th>세탁기 수</th>
+                      <th>건조기 수</th>
+                      <th>남은 시간</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- 데이터는 여기에서 동적으로 추가됩니다. -->
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
 
   <!-- Footer -->
   <footer class="main-footer">
@@ -80,9 +146,8 @@
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-  $.widget.bridge('uibutton', $.ui.button);
+  $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -110,12 +175,38 @@
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
-
 <script>
   $(document).ready(function() {
     $("#sidebar-container").load("sidebar.html", function() {
       console.log("Sidebar loaded successfully.");
     });
+
+    fetch('/api/laundry')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const tableBody = document.querySelector('#laundry-table tbody');
+          data.data.forEach(laundry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${laundry.id}</td>
+              <td><a href="admin_laundry_info.html?name=${encodeURIComponent(laundry.name)}">${laundry.name}</a></td>
+              <td>${laundry.road_address}</td>
+              <td>${laundry.address}</td>
+              <td>${laundry.phone}</td>
+              <td>${laundry.washer_count || ''}</td>
+              <td>${laundry.dryer_count || ''}</td>
+              <td>${laundry.remain_time || ''}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          console.error('데이터를 가져오는 중 오류가 발생했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching laundry data:', error);
+      });
   });
 </script>
 </body>

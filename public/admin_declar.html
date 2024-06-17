@@ -60,7 +60,71 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <!-- 여기에 페이지 내용이 추가됩니다. -->
+  <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">문의 관리</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+              <li class="breadcrumb-item active">문의 관리</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">문의 관리</h3>
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap" id="declar-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>이름</th>
+                      <th>이메일</th>
+                      <th>제목</th>
+                      <th>문의 내용</th>
+                      <th>문의 날짜</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- 데이터는 여기에서 동적으로 추가됩니다. -->
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
 
   <!-- Footer -->
   <footer class="main-footer">
@@ -80,9 +144,8 @@
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-  $.widget.bridge('uibutton', $.ui.button);
+  $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -110,12 +173,36 @@
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
-
 <script>
   $(document).ready(function() {
     $("#sidebar-container").load("sidebar.html", function() {
       console.log("Sidebar loaded successfully.");
     });
+
+    fetch('/api/declars')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const tableBody = document.querySelector('#declar-table tbody');
+          data.data.forEach(declar => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${declar.dec_id}</td>
+              <td>${declar.name}</td>
+              <td>${declar.email}</td>
+              <td>${declar.title}</td>
+              <td>${declar.reason}</td>
+              <td>${declar.dec_date}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          console.error('데이터를 가져오는 중 오류가 발생했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching declar data:', error);
+      });
   });
 </script>
 </body>

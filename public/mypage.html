@@ -1,9 +1,4 @@
 <!DOCTYPE HTML>
-<!--
-	Strata by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
 		<title>LRS</title>
@@ -26,53 +21,100 @@
 			document.addEventListener('DOMContentLoaded', function () {
 				const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 				const authButton = document.getElementById('authButton');
-	
+				const mypageButton = document.getElementById('mypageButton');
+
 				if (isLoggedIn) {
 					authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
 					mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
 					document.getElementById('logoutLink').addEventListener('click', function (event) {
 						event.preventDefault();
-						// 실제 로그아웃 처리 로직
 						sessionStorage.removeItem('isLoggedIn');
-						window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
+						window.location.href = 'index.html'; // 로그아웃 후 리디렉션할 페이지
 					});
+					
+					// 로그인된 사용자의 정보 가져오기
+					const username = sessionStorage.getItem('username');
+					fetch(`/api/user?username=${username}`)
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								const user = data.user;
+								document.getElementById('name').value = user.name;
+								document.getElementById('id').value = user.uid;
+								document.getElementById('pw').value = user.pw;
+								document.getElementById('email').value = user.email;
+								document.getElementById('phone').value = user.phone;
+								document.getElementById('birth').value = user.birth;
+							} else {
+								console.error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+							}
+						})
+						.catch(error => {
+							console.error('Error fetching user data:', error);
+						});
 				} else {
 					authButton.innerHTML = '<a href="login.html">Login</a>';
 				}
 			});
+
+			function saveUserData(event) {
+				event.preventDefault();
+				const username = document.getElementById('id').value;
+				const name = document.getElementById('name').value;
+				const password = document.getElementById('pw').value;
+				const email = document.getElementById('email').value;
+				const phone = document.getElementById('phone').value;
+				const birth = document.getElementById('birth').value;
+
+				fetch('/api/updateUser', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ username, name, password, email, phone, birth })
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert('사용자 정보가 성공적으로 저장되었습니다.');
+					} else {
+						console.error('사용자 정보를 저장하는 중 오류가 발생했습니다.');
+					}
+				})
+				.catch(error => {
+					console.error('Error saving user data:', error);
+				});
+			}
 		</script>
 		<!-- Header -->
 			<header id="header">
 				<div class="inner">
-					<a class="image avatar"><img src="assets/image/raundry.png" alt="" /></a>
-					<h1><strong>내 정보</strong>
-					</h1>
+					<h1><strong>내 정보</strong></h1>
 				</div>
 			</header>
 
 		<!-- Main -->
 			<div id="main">
-
-				
 				<!-- Three -->
-					<section id="three">
-						<div class="row">
-							<div class="col-8 col-12-small">
-								<form method="post" action="#">
-									<div class="row gtr-uniform gtr-50">
-										<!-- <div class="col-6 col-12-xsmall"><input type="text" name="name" id="name" placeholder="Name" /></div> -->
-										<div class="col-12"><input type="text" name="name" id="name" placeholder="Name" value="user"/></div>
-										<div class="col-6 col-12-xsmall"><input type="text" name="id" id="id" placeholder="ID" value="user1"/></div>
-										<div class="col-6 col-12-xsmall"><input type="password" name="pw" id="pw" placeholder="password" value="1234"/></div>
-										<div class="col-12"><input type="email" name="email" id="email" placeholder="Email" value="email@email"/></div>
-									</div>
-								</form>
+				<section id="three">
+					<div class="row">
+						<div class="col-8 col-12-small">
+							<form method="post" onsubmit="saveUserData(event)">
+								<div class="row gtr-uniform gtr-50">
+									<div class="col-12"><input type="text" name="name" id="name" placeholder="Name" /></div>
+									<div class="col-6 col-12-xsmall"><input type="text" name="id" id="id" placeholder="ID" readonly /></div>
+									<div class="col-6 col-12-xsmall"><input type="password" name="pw" id="pw" placeholder="Password" /></div>
+									<div class="col-12"><input type="email" name="email" id="email" placeholder="Email" /></div>
+									<div class="col-12"><input type="tel" name="phone" id="phone" placeholder="Phone" /></div>
+									<div class="col-12"><input type="date" name="birth" id="birth" placeholder="Birthdate" /></div>
+								</div>
 								<ul class="actions">
 									<div><input type="submit" value="저장" /></div>
 								</ul>
-							</div>
+							</form>
 						</div>
-					</section>
+					</div>
+				</section>
 			</div>
 
 		<!-- Footer -->

@@ -60,7 +60,83 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
-  <!-- 여기에 페이지 내용이 추가됩니다. -->
+  <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">세탁소 관리</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+              <li class="breadcrumb-item active">Laundry Management</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">General</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="inputName">이름</label>
+                <input type="text" id="name" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputClientCompany">도로명 주소</label>
+                <input type="text" id="road_address" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputClientCompany">주소</label>
+                <input type="text" id="address" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputClientCompany">전화번호</label>
+                <input type="text" id="phone" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputProjectLeader">세탁기 수</label>
+                <input type="text" id="washer_count" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputProjectLeader">건조기 수</label>
+                <input type="text" id="dryer_count" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputProjectLeader">남은 시간</label>
+                <input type="text" id="remain_time" class="form-control" value="">
+              </div>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <a href="#" class="btn btn-secondary">Cancel</a>
+          <input type="submit" value="Save Changes" class="btn btn-success float-right">
+        </div>
+      </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
 
   <!-- Footer -->
   <footer class="main-footer">
@@ -80,9 +156,8 @@
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-  $.widget.bridge('uibutton', $.ui.button);
+  $.widget.bridge('uibutton', $.ui.button)
 </script>
 <!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -110,12 +185,36 @@
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
-
 <script>
   $(document).ready(function() {
     $("#sidebar-container").load("sidebar.html", function() {
       console.log("Sidebar loaded successfully.");
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+
+    if (name) {
+      fetch(`/api/laundry?name=${encodeURIComponent(name)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const laundry = data.data[0];
+            document.getElementById('name').value = laundry.name;
+            document.getElementById('road_address').value = laundry.road_address;
+            document.getElementById('address').value = laundry.address;
+            document.getElementById('phone').value = laundry.phone;
+            document.getElementById('washer_count').value = laundry.washer_count || '';
+            document.getElementById('dryer_count').value = laundry.dryer_count || '';
+            document.getElementById('remain_time').value = laundry.remain_time || '';
+          } else {
+            console.error('데이터를 가져오는 중 오류가 발생했습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching laundry data:', error);
+        });
+    }
   });
 </script>
 </body>
