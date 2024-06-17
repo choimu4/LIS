@@ -4,25 +4,39 @@ document.addEventListener('DOMContentLoaded', function () {
     const laundryNameElement = document.getElementById('laundryName');
     const reservationStatusElement = document.getElementById('reservationStatus');
     const machineContainer = document.getElementById('machineContainer');
+    const manageLaundryButton = document.getElementById('manageLaundryButton');
+    const adminModal = document.getElementById('adminModal');
+    const closeAdminModal = document.getElementById('closeAdminModal');
+    const laundryForm = document.getElementById('laundryForm');
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.uid === 'admin') {
+        manageLaundryButton.style.display = 'block';
+    }
 
     laundryNameElement.textContent = name;
 
-    // 예약 가능한 지점 리스트
-    const reservableStores = ["크린토피아 코인워시365 노원인덕대점"];
+    // 세탁소 정보를 불러와서 표시
+    fetch(`/api/laundry?name=${name}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const laundry = data.data[0];
+                reservationStatusElement.textContent = "안녕하세요 LRS입니다.";
+                displayMachines(laundry.washer_count, laundry.dryer_count);
+            } else {
+                reservationStatusElement.textContent = "예약이 불가능합니다.";
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching laundry data:', error);
+            reservationStatusElement.textContent = "예약이 불가능합니다.";
+        });
 
-    if (reservableStores.includes(name)) {
-        reservationStatusElement.textContent = "안녕하세요 LRS입니다.";
-        loadMachines();
-    } else {
-        reservationStatusElement.textContent = "예약이 불가능합니다.";
-    }
-
-    function loadMachines() {
+    function displayMachines(washerCount, dryerCount) {
         const defaultMachines = [
-            { type: '대형 세탁기', count: 3 },
-            { type: '특대형 세탁기', count: 2 },
-            { type: '대형 건조기', count: 3 },
-            { type: '특대형 건조기', count: 2 }
+            { type: '세탁기', count: washerCount },
+            { type: '건조기', count: dryerCount }
         ];
 
         defaultMachines.forEach(machine => {
@@ -70,12 +84,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
         modalText.innerHTML = `${number}번 ${type}<br>`;
 
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+
         if (status === 'available') {
-            modalText.innerHTML += "예약 가능합니다.";
-            modalButton.style.display = 'block';
-            modalButton.onclick = function () {
-                reserveMachine(type, number);
-            };
+            if (isLoggedIn) {
+                modalText.innerHTML += "예약 가능합니다.";
+                modalButton.style.display = 'block';
+                modalButton.onclick = function () {
+                    reserveMachine(type, number);
+                };
+            } else {
+                modalText.innerHTML += "로그인 후 이용 바랍니다.";
+                modalButton.style.display = 'none';
+            }
         } else {
             modalText.innerHTML += status === 'reserved' ? "대기중입니다." : status === 'in-use' ? "사용중입니다." : "고장입니다.";
             modalButton.style.display = 'none';
@@ -85,6 +106,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function reserveMachine(type, number) {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+
+        if (!isLoggedIn) {
+            alert("로그인 후 이용 바랍니다.");
+            return;
+        }
+
         const machine = document.getElementById(`${type}-${number}`);
         machine.className = 'machine reserved';
         machine.innerHTML = `${number}번<br>${type}<br>대기중`;
@@ -149,6 +177,47 @@ document.addEventListener('DOMContentLoaded', function () {
                 return '';
         }
     }
+
+    // 세탁소 관리 버튼을 클릭했을 때 관리자 모달 열기
+    manageLaundryButton.addEventListener('click', function () {
+        adminModal.style.display = 'block';
+    });
+
+    // 모달 닫기 버튼 이벤트
+    closeAdminModal.addEventListener('click', function () {
+        adminModal.style.display = 'none';
+    });
+
+    // 세탁소 관리 폼 제출 이벤트
+    laundryForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const washerCount = document.getElementById('washerCount').value;
+        const dryerCount = document.getElementById('dryerCount').value;
+
+        fetch('/api/updateLaundry', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, washer_count: washerCount, dryer_count: dryerCount })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('세탁소 정보가 업데이트되었습니다.');
+                adminModal.style.display = 'none';
+                machineContainer.innerHTML = '';
+                loadMachines();
+            } else {
+                alert('업데이트 중 오류가 발생했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating laundry:', error);
+            alert('업데이트 중 오류가 발생했습니다.');
+        });
+    });
 
     document.getElementById('closeModal').addEventListener('click', function () {
         document.getElementById('machineModal').style.display = 'none';

@@ -68,7 +68,9 @@ app.post('/api/login', (req, res) => {
     }
 
     if (results.length > 0) {
-      res.json({ success: true, user: results[0] });
+      const user = results[0];
+      const isAdmin = user.uid === 'admin';
+      res.json({ success: true, isAdmin, user });
     } else {
       res.json({ success: false, message: '아이디 또는 비밀번호가 틀립니다.' });
     }
@@ -166,6 +168,19 @@ app.get('/api/laundry', (req, res) => {
   });
 });
 
+// 세탁소 정보 업데이트 API 엔드포인트
+app.post('/api/updateLaundry', (req, res) => {
+  const { name, washer_count, dryer_count } = req.body;
+
+  const query = 'UPDATE Laundry SET washer_count = ?, dryer_count = ? WHERE name = ?';
+  connection.query(query, [washer_count, dryer_count, name], (err, results) => {
+    if (err) {
+      console.error('Error updating laundry:', err);
+      return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
+    }
+    res.json({ success: true });
+  });
+});
 
 // 문의 저장 API 엔드포인트
 app.post('/api/declar', (req, res) => {
@@ -186,27 +201,12 @@ app.get('/api/declars', (req, res) => {
   const query = 'SELECT * FROM Declar';
   connection.query(query, (err, results) => {
     if (err) {
-      console.error('Error fetching users:', err); // 오류 로그 추가
+      console.error('Error fetching declars:', err); // 오류 로그 추가
       return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
     }
     res.json({ success: true, data: results });
   });
 });
-
-// 세탁소 정보 업데이트 API 엔드포인트
-app.post('/api/updateLaundry', (req, res) => {
-  const { id, name, road_address, address, phone, washer_count, dryer_count, remain_time } = req.body;
-
-  const query = 'UPDATE Laundry SET name = ?, road_address = ?, address = ?, phone = ?, washer_count = ?, dryer_count = ?, remain_time = ? WHERE id = ?';
-  connection.query(query, [name, road_address, address, phone, washer_count, dryer_count, remain_time, id], (err, results) => {
-    if (err) {
-      console.error('Error updating laundry:', err);
-      return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
-    }
-    res.json({ success: true });
-  });
-});
-
 
 // 서버 시작
 const PORT = process.env.PORT || 3000;

@@ -40,6 +40,7 @@
             <h1 id="laundryName">세탁소 이름</h1>
             <p id="reservationStatus"></p>
             <div id="machineContainer"></div>
+            <button id="manageLaundryButton" style="display:none;">세탁소 관리</button>
         </div>
     </div>
 
@@ -52,7 +53,21 @@
         </div>
     </div>
 
-    <!-- JavaScript 파일을 로드 -->
+    <!-- Admin Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeAdminModal">&times;</span>
+            <h2>세탁소 관리</h2>
+            <form id="laundryForm">
+                <label for="washerCount">세탁기 수:</label>
+                <input type="number" id="washerCount" name="washerCount" required><br>
+                <label for="dryerCount">건조기 수:</label>
+                <input type="number" id="dryerCount" name="dryerCount" required><br>
+                <button type="submit">저장</button>
+            </form>
+        </div>
+    </div>
+
     <script src="reservation.js"></script>
 </body>
 </html>
