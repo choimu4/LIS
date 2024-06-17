@@ -24,13 +24,13 @@
         document.addEventListener('DOMContentLoaded', function () {
             const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
             const authButton = document.getElementById('authButton');
+            const mypageButton = document.getElementById('mypageButton');
 
             if (isLoggedIn) {
                 authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
                 mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
                 document.getElementById('logoutLink').addEventListener('click', function (event) {
                     event.preventDefault();
-                    // 실제 로그아웃 처리 로직
                     sessionStorage.removeItem('isLoggedIn');
                     window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
                 });
@@ -67,10 +67,9 @@
                     lon = position.coords.longitude;
                 var locPosition = new kakao.maps.LatLng(lat, lon);
 
-                // 지도의 초기 설정
                 var mapOption = {
                     center: locPosition,
-                    level: 3 // 초기 줌 레벨
+                    level: 3
                 };
 
                 map = new kakao.maps.Map(document.getElementById('map'), mapOption);
@@ -107,16 +106,16 @@
 
             function searchPlaces() {
                 var center = map.getCenter();
-                var level = map.getLevel();
+                var level = map.getLevel(); // 현재 줌 레벨 저장
                 var keyword = '코인세탁소';
 
                 var placesSearchOption = {
                     location: center,
-                    radius: 2000 // 검색 반경 설정 (단위: 미터)
+                    radius: 2000
                 };
 
-                ps.keywordSearch(keyword, function(data, status, pagination) {
-                    placesSearchCB(data, status, pagination, center, level);
+                ps.keywordSearch(keyword, function (data, status, pagination) {
+                    placesSearchCB(data, status, pagination, center, level); // 줌 레벨을 함수로 전달
                 }, placesSearchOption);
             }
 
@@ -124,8 +123,8 @@
                 if (status === kakao.maps.services.Status.OK) {
                     displayPlaces(data);
                     displayPagination(pagination);
-                    map.setCenter(center); // 검색 전 중심을 유지
-                    map.setLevel(level);   // 검색 전 확대/축소 수준 유지
+                    map.setCenter(center);
+                    map.setLevel(level); // 검색 후 줌 레벨 유지
                 } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
                     alert('검색 결과가 존재하지 않습니다.');
                 } else if (status === kakao.maps.services.Status.ERROR) {
@@ -167,6 +166,9 @@
                         itemEl.onclick = function () {
                             window.location.href = `reservation.html?name=${encodeURIComponent(place.place_name)}`;
                         };
+
+                        // 장소 정보 저장
+                        savePlaceToDatabase(place);
                     })(marker, place);
 
                     fragment.appendChild(itemEl);
@@ -181,7 +183,6 @@
                     fragment = document.createDocumentFragment(),
                     i;
 
-                // 기존 페이지번호 삭제
                 while (paginationEl.hasChildNodes()) {
                     paginationEl.removeChild(paginationEl.lastChild);
                 }
@@ -264,6 +265,32 @@
                 var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';
                 infowindow.setContent(content);
                 infowindow.open(map, marker);
+            }
+
+            function savePlaceToDatabase(place) {
+                fetch('/api/savePlace', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: place.place_name,
+                        road_address: place.road_address_name || '',
+                        address: place.address_name,
+                        phone: place.phone || ''
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Place saved successfully');
+                    } else {
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             }
         });
     </script>

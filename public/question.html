@@ -1,74 +1,101 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LRS</title>
-    <link rel="stylesheet" href="question.css" />
-  </head>
-  <body>
-    <nav class="navbar">
-      <ul>
-          <li><a href="index.html">Home</a></li>
-          <li id="authButton"></li>
-          <li id="mypageButton"></li>
-    <li><a href="qna.html">Q&A</a></li>
-    <li><a href="question.html">FAQ</a></li>
-          <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
-      </ul>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LRS</title>
+  <link rel="stylesheet" href="question.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li id="authButton"></li>
+      <li id="mypageButton"></li>
+      <li><a href="qna.html">Q&A</a></li>
+      <li><a href="question.html">FAQ</a></li>
+      <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
+    </ul>
   </nav>
-<script>
-      document.addEventListener('DOMContentLoaded', function () {
-          const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-          const authButton = document.getElementById('authButton');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+      const authButton = document.getElementById('authButton');
+      const mypageButton = document.getElementById('mypageButton');
 
-          if (isLoggedIn) {
-              authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
-      mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
-              document.getElementById('logoutLink').addEventListener('click', function (event) {
-                  event.preventDefault();
-                  // 실제 로그아웃 처리 로직
-                  sessionStorage.removeItem('isLoggedIn');
-                  window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
-              });
-          } else {
-              authButton.innerHTML = '<a href="login.html">Login</a>';
-          }
-      });
+      if (isLoggedIn) {
+        authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
+        mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
+        document.getElementById('logoutLink').addEventListener('click', function (event) {
+          event.preventDefault();
+          sessionStorage.removeItem('isLoggedIn');
+          window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
+        });
+      } else {
+        authButton.innerHTML = '<a href="login.html">Login</a>';
+      }
+    });
   </script>
-    <h1>코인세탁소 문의하기</h1>
+  <h1>코인세탁소 문의하기</h1>
 
-    <form>
-      <div>
-        <label for="name">이름</label>
-        <input type="text" id="name" name="name" required />
-      </div>
+  <form id="inquiryForm" method="POST">
+    <div>
+      <label for="name">이름</label>
+      <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+      <label for="email">이메일</label>
+      <input type="email" id="email" name="email" required />
+    </div>
+    <div>
+      <label for="subject">제목</label>
+      <input type="text" id="subject" name="subject" required />
+    </div>
+    <div>
+      <label for="message">문의 내용</label>
+      <textarea id="message" name="message" rows="5" placeholder="- 지점명 :&#13;&#10;- 문의 내용 : (자세히 기입)" required></textarea>
+    </div>
+    <div class="inquiry-button-container">
+      <button type="submit" class="inquiry-button">문의하기</button>
+    </div>
+  </form>
 
-      <div>
-        <label for="email">이메일</label>
-        <input type="email" id="email" name="email" required />
-      </div>
+  <footer>
+    <p>연락처 정보:</p>
+    <p>이메일: coinlaundry@example.com</p>
+    <p>전화번호: 02-1234-5678</p>
+    <p>주소: 서울특별시 강남구 테헤란로 123, 코인세탁소</p>
+  </footer>
+  <script>
+    document.getElementById('inquiryForm').addEventListener('submit', function(event) {
+      event.preventDefault();
 
-      <div>
-        <label for="subject">제목</label>
-        <input type="text" id="subject" name="subject" required />
-      </div>
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
 
-      <div>
-        <label for="message">문의 내용</label>
-        <textarea id="message" name="message" rows="5" required></textarea>
-      </div>
-
-      <div class="inquiry-button-container">
-        <button type="submit" class="inquiry-button">문의하기</button>
-      </div>
-    </form>
-
-    <footer>
-      <p>연락처 정보:</p>
-      <p>이메일: coinlaundry@example.com</p>
-      <p>전화번호: 02-1234-5678</p>
-      <p>주소: 서울특별시 강남구 테헤란로 123, 코인세탁소</p>
-    </footer>
-  </body>
+      fetch('/api/declar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, subject, message })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('문의가 성공적으로 접수되었습니다.');
+          document.getElementById('inquiryForm').reset();
+        } else {
+          alert('문의 접수 중 오류가 발생했습니다: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('문의 접수 중 오류가 발생했습니다.');
+      });
+    });
+  </script>
+</body>
 </html>

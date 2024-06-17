@@ -65,12 +65,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">관리자 페이지</h1>
+            <h1 class="m-0">세탁소 관리</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-              <li class="breadcrumb-item active">Admin</li>
+              <li class="breadcrumb-item active">Laundry Management</li>
             </ol>
           </div>
         </div>
@@ -79,49 +79,61 @@
     <!-- /.content-header -->
 
     <!-- Main content -->
-    <div class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">사용자 관리</h3>
-                <div class="card-tools">
-                  <div class="input-group input-group-sm" style="width: 150px;">
-                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                    <div class="input-group-append">
-                      <button type="submit" class="btn btn-default">
-                        <i class="fas fa-search"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+    <section class="content">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">General</h3>
+
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
               </div>
-              <!-- /.card-header -->
-              <div class="card-body table-responsive p-0">
-                <table class="table table-hover text-nowrap" id="user-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>아이디</th>
-                      <th>이름</th>
-                      <th>이메일</th>
-                      <th>휴대전화 번호</th>
-                      <th>생년월일</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <!-- 데이터는 여기에서 동적으로 추가됩니다. -->
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
+            <div class="card-body">
+              <div class="form-group">
+                <label for="inputName">이름</label>
+                <input type="text" id="name" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputClientCompany">도로명 주소</label>
+                <input type="text" id="road_address" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputClientCompany">주소</label>
+                <input type="text" id="address" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputClientCompany">전화번호</label>
+                <input type="text" id="phone" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputProjectLeader">세탁기 수</label>
+                <input type="text" id="washer_count" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputProjectLeader">건조기 수</label>
+                <input type="text" id="dryer_count" class="form-control" value="">
+              </div>
+              <div class="form-group">
+                <label for="inputProjectLeader">남은 시간</label>
+                <input type="text" id="remain_time" class="form-control" value="">
+              </div>
+              <input type="hidden" id="laundry_id" value="">
+            </div>
+            <!-- /.card-body -->
           </div>
+          <!-- /.card -->
         </div>
       </div>
-    </div>
+      <div class="row">
+        <div class="col-12">
+          <button id="saveChanges" class="btn btn-success float-right">Save Changes</button>
+        </div>
+      </div>
+    </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
@@ -155,6 +167,7 @@
 <script src="plugins/sparklines/sparkline.js"></script>
 <!-- JQVMap -->
 <script src="plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
 <!-- jQuery Knob Chart -->
 <script src="plugins/jquery-knob/jquery.knob.min.js"></script>
 <!-- daterangepicker -->
@@ -178,30 +191,62 @@
       console.log("Sidebar loaded successfully.");
     });
 
-    fetch('/api/users')
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+
+    if (name) {
+      fetch(`/api/laundry?name=${encodeURIComponent(name)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const laundry = data.data[0];
+            document.getElementById('name').value = laundry.name;
+            document.getElementById('road_address').value = laundry.road_address;
+            document.getElementById('address').value = laundry.address;
+            document.getElementById('phone').value = laundry.phone;
+            document.getElementById('washer_count').value = laundry.washer_count || '';
+            document.getElementById('dryer_count').value = laundry.dryer_count || '';
+            document.getElementById('remain_time').value = laundry.remain_time || '';
+            document.getElementById('laundry_id').value = laundry.id;
+          } else {
+            console.error('데이터를 가져오는 중 오류가 발생했습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching laundry data:', error);
+        });
+    }
+
+    document.getElementById('saveChanges').addEventListener('click', function() {
+      const id = document.getElementById('laundry_id').value;
+      const name = document.getElementById('name').value;
+      const road_address = document.getElementById('road_address').value;
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+      const washer_count = document.getElementById('washer_count').value;
+      const dryer_count = document.getElementById('dryer_count').value;
+      const remain_time = document.getElementById('remain_time').value;
+
+      fetch('/api/updateLaundry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id, name, road_address, address, phone, washer_count, dryer_count, remain_time })
+      })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          const tableBody = document.querySelector('#user-table tbody');
-          data.data.forEach(user => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${user.id}</td>
-              <td>${user.uid}</td>
-              <td>${user.name}</td>
-              <td>${user.email}</td>
-              <td>${user.phone}</td>
-              <td>${user.birth}</td>
-            `;
-            tableBody.appendChild(row);
-          });
+          alert('변경 사항이 저장되었습니다!');
+          window.location.reload(); // 페이지 새로고침
         } else {
-          console.error('데이터를 가져오는 중 오류가 발생했습니다.');
+          alert('변경 사항 저장 중 오류가 발생했습니다.');
         }
       })
       .catch(error => {
-        console.error('Error fetching user data:', error);
+        console.error('Error updating laundry data:', error);
       });
+    });
   });
 </script>
 </body>
