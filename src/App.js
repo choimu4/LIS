@@ -193,6 +193,21 @@ app.get('/api/declars', (req, res) => {
   });
 });
 
+// 세탁소 정보 업데이트 API 엔드포인트
+app.post('/api/updateLaundry', (req, res) => {
+  const { id, name, road_address, address, phone, washer_count, dryer_count, remain_time } = req.body;
+
+  const query = 'UPDATE Laundry SET name = ?, road_address = ?, address = ?, phone = ?, washer_count = ?, dryer_count = ?, remain_time = ? WHERE id = ?';
+  connection.query(query, [name, road_address, address, phone, washer_count, dryer_count, remain_time, id], (err, results) => {
+    if (err) {
+      console.error('Error updating laundry:', err);
+      return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
+    }
+    res.json({ success: true });
+  });
+});
+
+
 // 서버 시작
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

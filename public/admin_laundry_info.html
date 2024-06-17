@@ -121,6 +121,7 @@
                 <label for="inputProjectLeader">남은 시간</label>
                 <input type="text" id="remain_time" class="form-control" value="">
               </div>
+              <input type="hidden" id="laundry_id" value="">
             </div>
             <!-- /.card-body -->
           </div>
@@ -129,8 +130,7 @@
       </div>
       <div class="row">
         <div class="col-12">
-          <a href="#" class="btn btn-secondary">Cancel</a>
-          <input type="submit" value="Save Changes" class="btn btn-success float-right">
+          <button id="saveChanges" class="btn btn-success float-right">Save Changes</button>
         </div>
       </div>
     </section>
@@ -207,6 +207,7 @@
             document.getElementById('washer_count').value = laundry.washer_count || '';
             document.getElementById('dryer_count').value = laundry.dryer_count || '';
             document.getElementById('remain_time').value = laundry.remain_time || '';
+            document.getElementById('laundry_id').value = laundry.id;
           } else {
             console.error('데이터를 가져오는 중 오류가 발생했습니다.');
           }
@@ -215,6 +216,37 @@
           console.error('Error fetching laundry data:', error);
         });
     }
+
+    document.getElementById('saveChanges').addEventListener('click', function() {
+      const id = document.getElementById('laundry_id').value;
+      const name = document.getElementById('name').value;
+      const road_address = document.getElementById('road_address').value;
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+      const washer_count = document.getElementById('washer_count').value;
+      const dryer_count = document.getElementById('dryer_count').value;
+      const remain_time = document.getElementById('remain_time').value;
+
+      fetch('/api/updateLaundry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id, name, road_address, address, phone, washer_count, dryer_count, remain_time })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('변경 사항이 저장되었습니다!');
+          window.location.reload(); // 페이지 새로고침
+        } else {
+          alert('변경 사항 저장 중 오류가 발생했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('Error updating laundry data:', error);
+      });
+    });
   });
 </script>
 </body>
