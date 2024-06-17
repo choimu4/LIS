@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <title>LRS</title>
   <meta charset="utf-8" />
@@ -60,7 +59,6 @@
   </style>
   <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=q54y71b9jd"></script>
 </head>
-
 <body class="is-preload">
   <div id="wrapper">
     <div id="bg"></div>
@@ -110,6 +108,7 @@
 
       // 세션 스토리지를 사용하여 로그인 상태 확인
       const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+      const uid = sessionStorage.getItem('username'); // 사용자 ID 가져오기
 
       const loginItem = document.getElementById('login-item');
       const profileItem = document.getElementById('profile-item');
@@ -118,7 +117,11 @@
         // 로그인된 상태라면 로그인 버튼을 로그아웃 버튼으로 대체
         loginItem.innerHTML = `<a href="#" class="icon solid fa-sign-out-alt" onclick="logout()"></a><span class="tooltiptext">Logout</span>`;
         // My Profile 항목을 표시
-        profileItem.innerHTML = `<a href="mypage.html" class="icon solid fa-user"></a><span class="tooltiptext">My Profile</span>`
+        if (uid === 'admin') {
+          profileItem.innerHTML = `<a href="admin.html" class="icon solid fa-user"></a><span class="tooltiptext">Admin</span>`;
+        } else {
+          profileItem.innerHTML = `<a href="mypage.html" class="icon solid fa-user"></a><span class="tooltiptext">My Profile</span>`;
+        }
 
       } else {
         // 로그아웃 상태라면 로그인 버튼 표시
@@ -136,5 +139,4 @@
     }
   </script>
 </body>
-
 </html>

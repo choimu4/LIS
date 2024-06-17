@@ -39,8 +39,6 @@
         <a href="index.html" class="nav-link">Home</a>
       </li>
     </ul>
-
-  
   </nav>
   <!-- /.navbar -->
 
@@ -54,27 +52,24 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
-
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-               <li class="nav-item">
-                <a href="#" class="nav-link"><i class="link-icon" data-feather="calendar"></i><span>예약관리</span></a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link"><i class="link-icon" data-feather="flag"></i><span>신고접수</span></a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link"><i class="link-icon" data-feather="bar-chart-2"></i><span>통계</span></a>
-              </li>
-              <li class="nav-item">
-                <a href="admin_user.html" class="nav-link"><i class="link-icon" data-feather="users"></i><span>사용자 관리</span></a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link"><i class="link-icon" data-feather="flag"></i><span>세탁소 관리</span></a>
-              </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link"><i class="link-icon" data-feather="calendar"></i><span>예약관리</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link"><i class="link-icon" data-feather="flag"></i><span>신고접수</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link"><i class="link-icon" data-feather="bar-chart-2"></i><span>통계</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="admin_user.html" class="nav-link"><i class="link-icon" data-feather="users"></i><span>사용자 관리</span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link"><i class="link-icon" data-feather="flag"></i><span>세탁소 관리</span></a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
@@ -83,8 +78,73 @@
   </aside>
 
   <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">관리자 페이지</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+              <li class="breadcrumb-item active">Admin</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content-header -->
 
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">사용자 관리</h3>
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap" id="user-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>아이디</th>
+                      <th>이름</th>
+                      <th>이메일</th>
+                      <th>휴대전화 번호</th>
+                      <th>생년월일</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- 데이터는 여기에서 동적으로 추가됩니다. -->
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.content -->
+  </div>
   <!-- /.content-wrapper -->
+
+  <!-- Footer -->
   <footer class="main-footer">
     <strong>Copyright &copy; 2024 <a href="index.html">LRS</a>.</strong>
     All rights reserved.
@@ -102,7 +162,6 @@
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
-<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
@@ -132,5 +191,33 @@
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/users')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const tableBody = document.querySelector('#user-table tbody');
+          data.data.forEach(user => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${user.id}</td>
+              <td>${user.uid}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+              <td>${user.phone}</td>
+              <td>${user.birth}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        } else {
+          console.error('데이터를 가져오는 중 오류가 발생했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+  });
+</script>
 </body>
 </html>

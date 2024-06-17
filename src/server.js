@@ -1,4 +1,5 @@
 const express = require('express');
+const mysql = require('mysql2');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -10,45 +11,32 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-const KAKAO_CLIENT_ID = '209c2fbbd8b5150893c2e7bbf4c704b4';
-const KAKAO_CLIENT_SECRET = '209c2fbbd8b5150893c2e7bbf4c704b4';
-const REDIRECT_URI = 'http://localhost:3000/oauth/kakao/callback';
 
-app.get('/oauth/kakao/callback', async (req, res) => {
-  const { code } = req.query;
-  
-  try {
-    const tokenResponse = await axios.post(
-      'https://kauth.kakao.com/oauth/token',
-      {},
-      {
-        params: {
-          grant_type: 'authorization_code',
-          client_id: KAKAO_CLIENT_ID,
-          redirect_uri: REDIRECT_URI,
-          code: code,
-          client_secret: KAKAO_CLIENT_SECRET
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
-    );
+// AWS RDS MySQL 연결 설정
+const connection = mysql.createConnection({
+  host: 'softwareproject.cpg6iummgq8d.eu-north-1.rds.amazonaws.com',
+  user: 'admin',
+  password: 'cometrue',
+  database: 'softwareproject'
+});
 
-    const { access_token } = tokenResponse.data;
-
-    const userResponse = await axios.get('https://kapi.kakao.com/v2/user/me', {
-      headers: {
-        Authorization: `Bearer ${access_token}`
-      }
-    });
-
-    const user = userResponse.data;
-
-    res.json(user);
-  } catch (error) {
-    res.status(500).send('Error during OAuth process');
+connection.connect(err => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err);
+    return;
   }
+  console.log('Connected to MySQL');
+});
+
+
+// MySQL 데이터 API 엔드포인트 설정
+app.get('/api/data', (req, res) => {
+  connection.query('SELECT * FROM mytable', (err, results) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.json(results);
+  });
 });
 
 // 정적 파일 제공
