@@ -1,74 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LRS</title>
-  <link rel="stylesheet" href="login.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세탁소 예약</title>
+    <link rel="stylesheet" href="assets/css/reservation.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
-  <!-- 로그인 폼 -->
-  <div class="form">
-    <div class="form-inner">
-      <h2>로그인</h2>
-      <form id="loginForm">
-        <div class="input-wrapper">
-          <label for="username">아이디:</label>
-          <div class="input-group">
-            <span class="icon">😗</span>
-            <input type="text" id="username" name="username" required>
-          </div>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="map.html">Map</a></li>
+            <li><a href="qna.html">Q&A</a></li>
+            <li><a href="question.html">FAQ</a></li>
+            <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
+        </ul>
+    </nav>
+    <div class="legend" id="legend">
+        <h3>기계 상태 설명:</h3>
+        <div class="legend-item">
+            <div class="machine available"></div>
+            <span>예약 가능</span>
         </div>
-        <div class="input-wrapper">
-          <label for="password">비밀번호:</label>
-          <div class="input-group">
-            <span class="icon">🔒</span>
-            <input type="password" id="password" name="password" required>
-          </div>
+        <div class="legend-item">
+            <div class="machine reserved"></div>
+            <span>대기중</span>
         </div>
-        <div class="btn-group">
-          <button type="submit" class="btn btn--primary">로그인</button>
-          <button onclick="location.href='register.html'" type="button" class="btn btn--text">회원가입</button>
+        <div class="legend-item">
+            <div class="machine in-use"></div>
+            <span>사용중</span>
         </div>
-      </form>
+        <div class="legend-item">
+            <div class="machine broken"></div>
+            <span>고장</span>
+        </div>
     </div>
-  </div>
-  <script>
-    // 로그인 처리 함수
-    function login(username, password) {
-      // 서버로 로그인 데이터 전송
-      fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // 사용자 정보와 관리자 여부를 localStorage에 저장
-          localStorage.setItem('user', JSON.stringify(data.user));
-          sessionStorage.setItem('username', username);
-          sessionStorage.setItem('isLoggedIn', 'true'); // 로그인 상태 저장
-          window.location.href = 'index.html'; // 로그인 성공 후 메인 페이지로 이동
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
+    <div class="content-wrapper">
+        <div class="content">
+            <h1 id="laundryName">세탁소 이름</h1>
+            <p id="reservationStatus"></p>
+            <div id="machineContainer"></div>
+            <button id="manageLaundryButton" style="display:none;">세탁소 관리</button>
+        </div>
+    </div>
 
-    // 로그인 폼 제출 이벤트 핸들러
-    document.getElementById('loginForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      // 로그인 함수 호출
-      login(username, password);
-    });
-  </script>
+    <!-- Modal -->
+    <div id="machineModal" class="modal">
+        <div class="modal-content animate__animated animate__fadeInDown">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+            </div>
+            <div class="modal-body">
+                <p id="modalText"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="modalButton" style="display:none;">예약하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content animate__animated animate__fadeInUp">
+            <span class="close" id="closeAdminModal">&times;</span>
+            <h2>세탁소 관리</h2>
+            <form id="laundryForm">
+                <label for="washerCount">세탁기 수:</label>
+                <input type="number" id="washerCount" name="washerCount" required><br>
+                <label for="dryerCount">건조기 수:</label>
+                <input type="number" id="dryerCount" name="dryerCount" required><br>
+                <button type="submit">저장</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="reservation.js"></script>
 </body>
 </html>

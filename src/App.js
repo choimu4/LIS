@@ -39,9 +39,13 @@ connection.connect(err => {
   console.log('Connected to MySQL');
 });
 
-// 회원가입 API 엔드포인트
 app.post('/api/register', (req, res) => {
   const { name, username, password, email, birthdate, phone } = req.body;
+
+  // 입력 데이터 검증
+  if (!name || !username || !password || !email || !birthdate || !phone) {
+    return res.json({ success: false, message: '모든 필드를 입력해야 합니다.' });
+  }
 
   if (username.length < 4) {
     return res.json({ success: false, message: '아이디는 4자 이상이어야 합니다.' });
@@ -52,13 +56,27 @@ app.post('/api/register', (req, res) => {
     return res.json({ success: false, message: '비밀번호는 6자 이상이며, 특수문자를 포함해야 합니다.' });
   }
 
-  const query = 'INSERT INTO User (uid, name, pw, email, phone, birth) VALUES (?, ?, ?, ?, ?, ?)';
-  connection.query(query, [username, name, password, email, phone, birthdate], (err, results) => {
+  // 중복 확인 쿼리
+  const checkQuery = 'SELECT * FROM User WHERE uid = ?';
+  connection.query(checkQuery, [username], (err, results) => {
     if (err) {
-      console.error('Error inserting user:', err); // 오류 로그 추가
+      console.error('Error checking user:', err);
       return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
     }
-    res.json({ success: true });
+
+    if (results.length > 0) {
+      return res.json({ success: false, message: '이미 존재하는 아이디입니다.' });
+    } else {
+      // 사용자 삽입 쿼리
+      const query = 'INSERT INTO User (uid, name, pw, email, phone, birth) VALUES (?, ?, ?, ?, ?, ?)';
+      connection.query(query, [username, name, password, email, phone, birthdate], (err, results) => {
+        if (err) {
+          console.error('Error inserting user:', err);
+          return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
+        }
+        res.json({ success: true });
+      });
+    }
   });
 });
 

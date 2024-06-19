@@ -80,9 +80,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function openModal(type, status, number) {
         const modal = document.getElementById('machineModal');
         const modalText = document.getElementById('modalText');
+        const modalTitle = document.getElementById('modalTitle');
         const modalButton = document.getElementById('modalButton');
 
-        modalText.innerHTML = `${number}번 ${type}<br>`;
+        modalTitle.textContent = `${number}번 ${type}`;
+        modalText.innerHTML = '';
 
         const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
 
@@ -132,7 +134,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                     headers: {
                                         'Content-Type': 'application/json'
                                     },
-                                    body: JSON.stringify({ user_id: userId, laundry_id: laundryId })
+                                    credentials: 'include', // 세션 정보를 포함하여 요청 보냄
+                                    body: JSON.stringify({ laundry_id: laundryId })
                                 })
                                 .then(response => response.json())
                                 .then(data => {
