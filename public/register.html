@@ -1,106 +1,105 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LRS</title>
-  <link rel="stylesheet" href="question.css">
+  <title>Register</title>
+  <link rel="stylesheet" href="register.css">
 </head>
 <body>
-  <nav class="navbar">
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li id="authButton"></li>
-      <li id="mypageButton"></li>
-      <li><a href="qna.html">Q&A</a></li>
-      <li><a href="question.html">FAQ</a></li>
-      <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
-    </ul>
-  </nav>
+  <!-- 회원가입 폼 -->
+  <div class="form">
+    <div class="form-inner">
+      <h2>회원가입</h2>
+      <form>
+        <div class="input-wrapper">
+          <label for="name">이름:</label>
+          <div class="input-group">
+            <span class="icon">👤</span>
+            <input type="text" id="name" name="name" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="username">아이디:</label>
+          <div class="input-group">
+            <span class="icon">😗</span>
+            <input type="text" id="username" name="username" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="password">비밀번호:</label>
+          <div class="input-group">
+            <span class="icon">🔒</span>
+            <input type="password" id="password" name="password" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="email">이메일:</label>
+          <div class="input-group">
+            <span class="icon">📧</span>
+            <input type="email" id="email" name="email" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="birthdate">생년월일:</label>
+          <div class="input-group">
+            <span class="icon">🎂</span>
+            <input type="date" id="birthdate" name="birthdate" required>
+          </div>
+        </div>
+        <div class="input-wrapper">
+          <label for="phone">휴대전화 번호:</label>
+          <div class="input-group">
+            <span class="icon">📱</span>
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" placeholder="예) 010-1234-5678">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button type="submit" class="btn btn--primary">회원가입</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-      const authButton = document.getElementById('authButton');
-      const mypageButton = document.getElementById('mypageButton');
-
-      if (isLoggedIn) {
-        authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
-        mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
-        document.getElementById('logoutLink').addEventListener('click', function (event) {
-          event.preventDefault();
-          sessionStorage.removeItem('isLoggedIn');
-          window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
-        });
-      } else {
-        authButton.innerHTML = '<a href="login.html">Login</a>';
+    // 회원가입 처리 함수
+    function register(name, username, password, email, birthdate, phone) {
+      // 아이디와 비밀번호 유효성 검사
+      if (username.length < 4) {
+        alert('아이디는 4자 이상이어야 합니다.');
+        return;
       }
-    });
-  </script>
 
-  <h1>코인세탁소 문의하기</h1>
+      // 비밀번호 규칙 검사
+      const specialChars = /[!@#$%^&*(),.?":{}|<>]/;
+      if (password.length < 6 || !specialChars.test(password)) {
+        alert('비밀번호는 6자 이상이며, 특수문자를 포함해야 합니다.');
+        return;
+      }
 
-  <form>
-    <div>
-      <label for="name">이름</label>
-      <input type="text" id="name" name="name" required>
-    </div>
+      // 회원 정보 저장 (예시로 localStorage에 저장)
+      const userData = {
+        name,
+        username,
+        password,
+        email,
+        birthdate,
+        phone
+      };
+      localStorage.setItem(username, JSON.stringify(userData));
+      alert('회원가입이 완료되었습니다!');
+      window.location.href = "login.html"; // 로그인 페이지로 이동
+    }
 
-    <div>
-      <label for="email">이메일</label>
-      <input type="email" id="email" name="email" required>
-    </div>
-
-    <div>
-      <label for="subject">제목</label>
-      <input type="text" id="subject" name="subject" required>
-    </div>
-
-    <div>
-      <label for="message">문의 내용</label>
-      <textarea id="message" name="message" rows="5" placeholder="양식" required></textarea>
-    </div>
-
-    <div class="inquiry-button-container">
-      <button type="submit" class="inquiry-button">문의하기</button>
-    </div>
-  </form>
-
-  <footer>
-    <p>연락처 정보:</p>
-    <p>이메일: coinlaundry@example.com</p>
-    <p>전화번호: 02-1234-5678</p>
-    <p>주소: 서울특별시 강남구 테헤란로 123, 코인세탁소</p>
-  </footer>
-
-  <script>
-    // 문의 폼 제출 이벤트 핸들러
+    // 회원가입 폼 제출 이벤트 핸들러
     document.querySelector('form').addEventListener('submit', function(event) {
       event.preventDefault();
       const name = document.getElementById('name').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
       const email = document.getElementById('email').value;
-      const subject = document.getElementById('subject').value;
-      const message = document.getElementById('message').value;
-
-      // 서버로 문의 데이터 전송
-      fetch('/api/declar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, email, title: subject, reason: message })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('문의가 접수되었습니다!');
-          window.location.href = 'index.html'; // 메인 페이지로 이동
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+      const birthdate = document.getElementById('birthdate').value;
+      const phone = document.getElementById('phone').value;
+      register(name, username, password, email, birthdate, phone);
     });
   </script>
 </body>

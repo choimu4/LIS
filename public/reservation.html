@@ -10,12 +10,32 @@
     <nav class="navbar">
         <ul>
             <li><a href="index.html">Home</a></li>
-            <li><a href="map.html">Map</a></li>
+            <li id="authButton"></li>
+            <li id="mypageButton"></li>
             <li><a href="qna.html">Q&A</a></li>
             <li><a href="question.html">FAQ</a></li>
             <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
         </ul>
     </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const authButton = document.getElementById('authButton');
+            const mypageButton = document.getElementById('mypageButton');
+
+            if (isLoggedIn) {
+                authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
+                mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
+                document.getElementById('logoutLink').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    sessionStorage.removeItem('isLoggedIn');
+                    window.location.href = 'map.html'; // 로그아웃 후 리디렉션할 페이지
+                });
+            } else {
+                authButton.innerHTML = '<a href="login.html">Login</a>';
+            }
+        });
+    </script>
     <div class="legend" id="legend">
         <h3>기계 상태 설명:</h3>
         <div class="legend-item">

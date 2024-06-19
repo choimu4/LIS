@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const moment = require('moment-timezone');
+const session = require('express-session');
 
 const app = express();
 
@@ -11,6 +12,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+}));
 
 // 루트 경로에서 'index.html' 파일 서빙
 app.get('/', (req, res) => {
@@ -70,6 +76,7 @@ app.post('/api/login', (req, res) => {
     if (results.length > 0) {
       const user = results[0];
       const isAdmin = user.uid === 'admin';
+      req.session.username = username; // 세션에 사용자 이름 저장
       res.json({ success: true, isAdmin, user });
     } else {
       res.json({ success: false, message: '아이디 또는 비밀번호가 틀립니다.' });
@@ -179,6 +186,58 @@ app.post('/api/updateLaundry', (req, res) => {
       return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
     }
     res.json({ success: true });
+  });
+});
+
+// 주문 생성 엔드포인트
+app.post('/api/order', (req, res) => {
+  const { laundry_id } = req.body;
+  const username = req.session.username; // 세션에서 사용자 이름 가져오기
+
+  if (!username) {
+    return res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
+  }
+
+  // 사용자 ID 가져오기
+  const userQuery = 'SELECT id FROM User WHERE uid = ?';
+  connection.query(userQuery, [username], (err, userResults) => {
+    if (err) {
+      console.error('Error fetching user ID:', err);
+      return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
+    }
+
+    if (userResults.length === 0) {
+      return res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    const user_id = userResults[0].id;
+    const order_date = moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss'); // 예약 시점의 날짜와 시간
+
+    const orderQuery = 'INSERT INTO Orders (user_id, laundry_id, order_date) VALUES (?, ?, ?)';
+    connection.query(orderQuery, [user_id, laundry_id, order_date], (err, orderResults) => {
+      if (err) {
+        console.error('Error creating order:', err);
+        return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
+      }
+      res.json({ success: true });
+    });
+  });
+});
+
+// 주문 정보 가져오기 API 엔드포인트
+app.get('/api/orders', (req, res) => {
+  const query = `
+    SELECT Orders.id, Orders.order_date, User.name as user_name, Laundry.name as laundry_name
+    FROM Orders
+    JOIN User ON Orders.user_id = User.id
+    JOIN Laundry ON Orders.laundry_id = Laundry.id
+  `;
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching orders:', err); // 오류 로그 추가
+      return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });
+    }
+    res.json({ success: true, data: results });
   });
 });
 

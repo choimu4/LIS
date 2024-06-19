@@ -113,26 +113,65 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const machine = document.getElementById(`${type}-${number}`);
-        machine.className = 'machine reserved';
-        machine.innerHTML = `${number}번<br>${type}<br>대기중`;
+        const username = sessionStorage.getItem('username'); // 세션에 저장된 사용자 이름을 가져옵니다.
 
-        // 상태 업데이트 및 저장
-        updateMachineStatus(type, number, 'reserved', 10000);
+        fetch(`/api/user?username=${username}`)
+            .then(response => response.json())
+            .then(userData => {
+                if (userData.success && userData.user) {
+                    const userId = userData.user.id;
 
-        // 모달 창 업데이트
-        machine.onclick = function() {
-            openModal(type, 'reserved', number);
-        };
+                    fetch(`/api/laundry?name=${name}`)
+                        .then(response => response.json())
+                        .then(laundryData => {
+                            if (laundryData.success && laundryData.data.length > 0) {
+                                const laundryId = laundryData.data[0].id;
 
-        setTimeout(() => {
-            updateStatusAfterDelay(type, number, 'in-use', '사용중', 10000);
-            setTimeout(() => {
-                updateStatusAfterDelay(type, number, 'available', '예약 가능', 10000);
-            }, 10000);
-        }, 10000);
+                                fetch('/api/order', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ user_id: userId, laundry_id: laundryId })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert('예약이 완료되었습니다.');
+                                        updateMachineStatus(type, number, 'reserved', 10000);
 
-        document.getElementById('machineModal').style.display = 'none';
+                                        setTimeout(() => {
+                                            updateStatusAfterDelay(type, number, 'in-use', '사용중', 10000);
+                                            setTimeout(() => {
+                                                updateStatusAfterDelay(type, number, 'available', '예약 가능', 10000);
+                                            }, 10000);
+                                        }, 10000);
+
+                                        document.getElementById('machineModal').style.display = 'none';
+                                    } else {
+                                        alert('예약에 실패했습니다.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('예약에 실패했습니다.');
+                                });
+                            } else {
+                                alert('세탁소를 찾을 수 없습니다.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('세탁소 정보를 가져오는 데 실패했습니다.');
+                        });
+                } else {
+                    alert('사용자 정보를 가져오는 데 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('사용자 정보를 가져오는 데 실패했습니다.');
+            });
     }
 
     function updateStatusAfterDelay(type, number, newStatus, newStatusText, delay = 0) {
@@ -208,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('세탁소 정보가 업데이트되었습니다.');
                 adminModal.style.display = 'none';
                 machineContainer.innerHTML = '';
-                loadMachines();
+                displayMachines(washerCount, dryerCount);
             } else {
                 alert('업데이트 중 오류가 발생했습니다.');
             }
