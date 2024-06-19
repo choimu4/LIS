@@ -86,10 +86,6 @@
               <span class="tooltiptext">Q&A</span>
             </li>
             <li class="tooltip">
-              <a href="payment.html" class="icon solid fa-credit-card"></a>
-              <span class="tooltiptext">Payment</span>
-            </li>
-            <li class="tooltip">
               <a href="https://github.com/choimu4/LRS" class="icon brands fa-github"></a>
               <span class="tooltiptext">Github</span>
             </li>
@@ -112,6 +108,7 @@
 
       const loginItem = document.getElementById('login-item');
       const profileItem = document.getElementById('profile-item');
+      const paymentItem = document.getElementById('payment-item'); // Add this line
 
       if (isLoggedIn) {
         // 로그인된 상태라면 로그인 버튼을 로그아웃 버튼으로 대체
@@ -122,14 +119,18 @@
         } else {
           profileItem.innerHTML = `<a href="mypage.html" class="icon solid fa-user"></a><span class="tooltiptext">My Profile</span>`;
         }
+        // Show Payment item if logged in
+        paymentItem.style.display = 'inline-block'; // Add this line
 
-      } else {
-        // 로그아웃 상태라면 로그인 버튼 표시
-        loginItem.innerHTML = `<a href="login.html" class="icon solid fa-sign-in-alt"></a><span class="tooltiptext">Login</span>`;
-        // My Profile 항목을 숨김
-        profileItem.style.display = 'none';
-      }
-    };
+        } else {
+          // 로그아웃 상태라면 로그인 버튼 표시
+          loginItem.innerHTML = `<a href="login.html" class="icon solid fa-sign-in-alt"></a><span class="tooltiptext">Login</span>`;
+          // My Profile 항목을 숨김
+          profileItem.style.display = 'none';
+          // Hide Payment item if not logged in
+          paymentItem.style.display = 'none'; // Add this line
+        }
+      };
 
     function logout() {
       // 세션 스토리지를 사용하여 로그인 정보 삭제
