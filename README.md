@@ -69,10 +69,10 @@
   * Front : 사용자 위치 권한, 현재 위치로 이동 기능 추가
 * 24.06.13
   * Front : map.html 세탁소 위치 검색, 마커, 현재 위치로 이동 기능 추가
-<<<<<<< HEAD
-=======
   * Front : qna.html, question.html, maypage.html 네비게이션바 추가
->>>>>>> refs/remotes/origin/main
-*24.06.15
- *예약페이지 추가중
+* 24.06.15
+  * 예약페이지 추가중
+* 24.06.19
+  * 관리자 페이지 추가 (사용자 관리, 세탁소 관리, 예약 관리)
+  * AWS, DB(mySQL) 연결
 
