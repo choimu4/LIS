@@ -242,15 +242,18 @@ app.post('/api/order', (req, res) => {
   });
 });
 
-// 주문 정보 가져오기 API 엔드포인트
+// 특정 사용자 주문 정보 가져오기 API 엔드포인트
 app.get('/api/orders', (req, res) => {
+  const userId = req.query.user_id;
+
   const query = `
-    SELECT Orders.id, Orders.order_date, User.name as user_name, Laundry.name as laundry_name
+    SELECT Orders.id, Orders.order_date, Laundry.name as laundry_name
     FROM Orders
-    JOIN User ON Orders.user_id = User.id
     JOIN Laundry ON Orders.laundry_id = Laundry.id
+    WHERE Orders.user_id = ?
   `;
-  connection.query(query, (err, results) => {
+  
+  connection.query(query, [userId], (err, results) => {
     if (err) {
       console.error('Error fetching orders:', err); // 오류 로그 추가
       return res.status(500).json({ success: false, message: '데이터베이스 오류 발생', error: err });

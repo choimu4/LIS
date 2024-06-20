@@ -1,129 +1,170 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>LRS</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="mypage.css" />
-	</head>
-	<body class="is-preload">
-		<nav class="navbar">
-			<ul>
-				<li><a href="index.html">Home</a></li>
-				<li id="authButton"></li>
-				<li id="mypageButton"></li>
-				<li><a href="qna.html">Q&A</a></li>
-				<li><a href="question.html">FAQ</a></li>
-				<li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
-			</ul>
-		</nav>
-		<script>
-			document.addEventListener('DOMContentLoaded', function () {
-				const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-				const authButton = document.getElementById('authButton');
-				const mypageButton = document.getElementById('mypageButton');
+<head>
+    <title>LRS</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="mypage.css" />
+</head>
+<body class="is-preload">
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li id="authButton"></li>
+            <li id="mypageButton"></li>
+            <li><a href="qna.html">Q&A</a></li>
+            <li><a href="question.html">FAQ</a></li>
+            <li><a href="https://github.com/choimu4/LRS">GitHub</a></li>
+        </ul>
+    </nav>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const authButton = document.getElementById('authButton');
+            const mypageButton = document.getElementById('mypageButton');
 
-				if (isLoggedIn) {
-					authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
-					mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
-					document.getElementById('logoutLink').addEventListener('click', function (event) {
-						event.preventDefault();
-						sessionStorage.removeItem('isLoggedIn');
-						window.location.href = 'index.html'; // 로그아웃 후 리디렉션할 페이지
-					});
-					
-					// 로그인된 사용자의 정보 가져오기
-					const username = sessionStorage.getItem('username');
-					fetch(`/api/user?username=${username}`)
-						.then(response => response.json())
-						.then(data => {
-							if (data.success) {
-								const user = data.user;
-								document.getElementById('name').value = user.name;
-								document.getElementById('id').value = user.uid;
-								document.getElementById('pw').value = user.pw;
-								document.getElementById('email').value = user.email;
-								document.getElementById('phone').value = user.phone;
-								document.getElementById('birth').value = user.birth;
-							} else {
-								console.error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
-							}
-						})
-						.catch(error => {
-							console.error('Error fetching user data:', error);
-						});
-				} else {
-					authButton.innerHTML = '<a href="login.html">Login</a>';
-				}
-			});
+            if (isLoggedIn) {
+                authButton.innerHTML = '<a href="#" id="logoutLink">Logout</a>';
+                mypageButton.innerHTML = '<a href="mypage.html">MyPage</a>';
+                document.getElementById('logoutLink').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    sessionStorage.removeItem('isLoggedIn');
+                    window.location.href = 'index.html'; // 로그아웃 후 리디렉션할 페이지
+                });
 
-			function saveUserData(event) {
-				event.preventDefault();
-				const username = document.getElementById('id').value;
-				const name = document.getElementById('name').value;
-				const password = document.getElementById('pw').value;
-				const email = document.getElementById('email').value;
-				const phone = document.getElementById('phone').value;
-				const birth = document.getElementById('birth').value;
+                // 로그인된 사용자의 정보 가져오기
+                const username = sessionStorage.getItem('username');
+                fetch(`/api/user?username=${username}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const user = data.user;
+                            document.getElementById('name').value = user.name;
+                            document.getElementById('id').value = user.uid;
+                            document.getElementById('pw').value = user.pw;
+                            document.getElementById('email').value = user.email;
+                            document.getElementById('phone').value = user.phone;
+                            document.getElementById('birth').value = user.birth;
 
-				fetch('/api/updateUser', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ username, name, password, email, phone, birth })
-				})
-				.then(response => response.json())
-				.then(data => {
-					if (data.success) {
-						alert('사용자 정보가 성공적으로 저장되었습니다.');
-					} else {
-						console.error('사용자 정보를 저장하는 중 오류가 발생했습니다.');
-					}
-				})
-				.catch(error => {
-					console.error('Error saving user data:', error);
-				});
-			}
-		</script>
-		<!-- Header -->
-			<header id="header">
-				<div class="inner">
-					<h1><strong>내 정보</strong></h1>
-				</div>
-			</header>
+                            // 예약 정보 가져오기
+                            fetch(`/api/orders?user_id=${user.id}`)
+                                .then(response => response.json())
+                                .then(orderData => {
+                                    if (orderData.success) {
+                                        const orders = orderData.data;
+                                        const orderTableBody = document.getElementById('orderTableBody');
+                                        orders.forEach(order => {
+                                            const row = document.createElement('tr');
+                                            row.innerHTML = `
+                                                <td>${order.id}</td>
+                                                <td>${order.laundry_name}</td>
+                                                <td>${order.order_date}</td>
+                                            `;
+                                            orderTableBody.appendChild(row);
+                                        });
+                                    } else {
+                                        console.error('예약 정보를 가져오는 중 오류가 발생했습니다.');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching order data:', error);
+                                });
+                        } else {
+                            console.error('사용자 정보를 가져오는 중 오류가 발생했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user data:', error);
+                    });
+            } else {
+                authButton.innerHTML = '<a href="login.html">Login</a>';
+            }
+        });
 
-		<!-- Main -->
-			<div id="main">
-				<!-- Three -->
-				<section id="three">
-					<div class="row">
-						<div class="col-8 col-12-small">
-							<form method="post" onsubmit="saveUserData(event)">
-								<div class="row gtr-uniform gtr-50">
-									<div class="col-12"><input type="text" name="name" id="name" placeholder="Name" /></div>
-									<div class="col-6 col-12-xsmall"><input type="text" name="id" id="id" placeholder="ID" readonly /></div>
-									<div class="col-6 col-12-xsmall"><input type="password" name="pw" id="pw" placeholder="Password" /></div>
-									<div class="col-12"><input type="email" name="email" id="email" placeholder="Email" /></div>
-									<div class="col-12"><input type="tel" name="phone" id="phone" placeholder="Phone" /></div>
-									<div class="col-12"><input type="date" name="birth" id="birth" placeholder="Birthdate" /></div>
-								</div>
-								<ul class="actions">
-									<div><input type="submit" value="저장" /></div>
-								</ul>
-							</form>
-						</div>
-					</div>
-				</section>
-			</div>
+        function saveUserData(event) {
+            event.preventDefault();
+            const username = document.getElementById('id').value;
+            const name = document.getElementById('name').value;
+            const password = document.getElementById('pw').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const birth = document.getElementById('birth').value;
 
-		<!-- Footer -->
-			<footer id="footer">
-				<div class="inner">
-					<ul class="copyright">
-						<li>&copy; Untitled</li><li>Design: Induk Uni.</li>
-					</ul>
-				</div>
-			</footer>
-	</body>
+            fetch('/api/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, name, password, email, phone, birth })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('사용자 정보가 성공적으로 저장되었습니다.');
+                } else {
+                    console.error('사용자 정보를 저장하는 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving user data:', error);
+            });
+        }
+    </script>
+    <!-- Header -->
+    <header id="header">
+        <div class="inner">
+            <h1><strong>내 정보</strong></h1>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <div id="main">
+        <div class="info-container">
+            <!-- 회원 정보 폼 -->
+            <section id="three">
+                <form method="post" onsubmit="saveUserData(event)">
+                    <h2>회원 정보</h2>
+                    <div class="row gtr-uniform gtr-50">
+                        <div class="col-12"><input type="text" name="name" id="name" placeholder="Name" /></div>
+                        <div class="col-6 col-12-xsmall"><input type="text" name="id" id="id" placeholder="ID" readonly /></div>
+                        <div class="col-6 col-12-xsmall"><input type="password" name="pw" id="pw" placeholder="Password" /></div>
+                        <div class="col-12"><input type="email" name="email" id="email" placeholder="Email" /></div>
+                        <div class="col-12"><input type="tel" name="phone" id="phone" placeholder="Phone" /></div>
+                        <div class="col-12"><input type="date" name="birth" id="birth" placeholder="Birthdate" /></div>
+                    </div>
+                    <ul class="actions">
+                        <div><input type="submit" value="저장" /></div>
+                    </ul>
+                </form>
+            </section>
+            <!-- 예약 정보 테이블 -->
+            <section id="three">
+                <h2>예약 정보</h2>
+                <form>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>예약 ID</th>
+                                <th>세탁소 이름</th>
+                                <th>예약 날짜</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderTableBody">
+                            <!-- 예약 정보가 여기에 추가됩니다. -->
+                        </tbody>
+                    </table>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="inner">
+            <ul class="copyright">
+                <li>&copy; Untitled</li><li>Design: Induk Uni.</li>
+            </ul>
+        </div>
+    </footer>
+</body>
 </html>
